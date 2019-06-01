@@ -3,6 +3,8 @@
 #include <eosio/system.hpp>
 #include <eosio/crypto.hpp>
 
+#include "eos_api.hpp"
+
 #define TOKEN_SYMBOL symbol("WEI", 4)
 #define GENESIS_TIME 1557849600
 #define TYPE_POST 1               
@@ -46,10 +48,10 @@ public:
 /**
  * 合约类
  */
-CONTRACT weiwendappss : public eosio::contract {
+CONTRACT weiwendapps2 : public eosio::contract {
 
 public:
-  weiwendappss(name self, name first_receiver, datastream<const char *> ds) : 
+  weiwendapps2(name self, name first_receiver, datastream<const char *> ds) : 
     contract(self, first_receiver, ds), users(self, self.value) {}  
 
   /**
@@ -98,7 +100,7 @@ public:
     }
 
     post_t posts(_self, _self.value);
-    posts.emplace(author, [&](auto& post){
+    auto pitr = posts.emplace(author, [&](auto& post){
       post.id = posts.available_primary_key();
       post.author = author;
       post.content = content;
@@ -113,6 +115,28 @@ public:
     auto itr = users.find(author.value);
     users.modify(itr, same_payer, [&](auto& user){
       user.post_num++;
+    });
+
+    checksum256 query_id = oraclize_query("URL", "json(https://api.binance.com/api/v3/ticker/price?symbol=EOSUSDT).price");
+    map_t maps(_self, _self.value);
+    maps.emplace(author, [&](auto& map){
+      map.post_id = pitr->id;
+      map.query_id = query_id;
+    });
+  }
+
+  ACTION callback(checksum256 queryId, std::vector<unsigned char> result, std::vector<unsigned char> proof){
+    require_auth(provable_cbAddress());
+
+    std::string price = vector_to_string(result);
+    
+    map_t maps(_self, _self.value);
+    auto secondary = maps.get_index<name{"byqueryid"}>();
+    auto itr = secondary.find(queryId);
+
+    post_t posts(_self, _self.value);
+    posts.modify(posts.find(itr->post_id), same_payer, [&](auto& post){
+      post.eos_price = price;
     });
   }
 
@@ -247,7 +271,7 @@ public:
   /**
    * 充值
    */
-  [[eosio::on_notify("weiwentokens::transfer")]] 
+  [[eosio::on_notify("weiwentoken2::transfer")]] 
   void deposit(name from, name to, asset quantity, std::string memo) {
     if(to != _self) return;
 
@@ -370,7 +394,7 @@ private:
   void issue_token(asset quantity){
     action(
       permission_level{_self,"active"_n},
-      "weiwentokens"_n,
+      "weiwentoken2"_n,
       "issue"_n,
       std::make_tuple(_self, quantity, std::string("issue token"))
     ).send();
@@ -382,7 +406,7 @@ private:
   void transfer_token(name to, asset quantity){
     action(
       permission_level{_self,"active"_n},
-      "weiwentokens"_n,
+      "weiwentoken2"_n,
       "transfer"_n,
       std::make_tuple(_self, to, quantity, std::string("transfer token"))
     ).send();
@@ -415,6 +439,7 @@ private:
     std::string content;      //内容
     uint32_t attachtype;      //附件类型 0=无 1=url 2=ipfshash 3=pic 4=video 5=file
     std::string attachment;   //附件
+    std::string eos_price;    //发文时EOS价格
     time_point_sec time;      //创建时间
     asset balance;            //获得代币数
     uint32_t like_num;        //获得赞数
@@ -484,4 +509,16 @@ private:
     indexed_by<"byto"_n, const_mem_fun<followtable, uint64_t, &followtable::get_secondary_2>>
   > follow_t;
 
+  //微文id到查询id的映射
+  TABLE postquerymap {
+    uint64_t post_id;
+    checksum256 query_id;
+
+    uint64_t primary_key() const { return post_id; }
+    checksum256 get_secondary_1() const { return query_id; }
+  };
+
+  typedef multi_index<"postquerymap"_n, postquerymap,
+    indexed_by<"byqueryid"_n, const_mem_fun<postquerymap, checksum256, &postquerymap::get_secondary_1>>
+  > map_t;
 };

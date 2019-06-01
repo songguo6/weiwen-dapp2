@@ -4,7 +4,7 @@ import ScatterJS from 'scatterjs-core'
 import ScatterEOS from 'scatterjs-plugin-eosjs2'
 
 const appName = '微文';
-const contract = 'weiwendappss';
+const contract = 'weiwendapps2';
 
 // jungle testnet
 const network = {

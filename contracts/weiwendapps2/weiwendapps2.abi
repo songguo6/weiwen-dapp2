@@ -4,6 +4,24 @@
     "types": [],
     "structs": [
         {
+            "name": "callback",
+            "base": "",
+            "fields": [
+                {
+                    "name": "queryId",
+                    "type": "checksum256"
+                },
+                {
+                    "name": "result",
+                    "type": "uint8[]"
+                },
+                {
+                    "name": "proof",
+                    "type": "uint8[]"
+                }
+            ]
+        },
+        {
             "name": "comment",
             "base": "",
             "fields": [
@@ -174,6 +192,20 @@
             ]
         },
         {
+            "name": "postquerymap",
+            "base": "",
+            "fields": [
+                {
+                    "name": "post_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "query_id",
+                    "type": "checksum256"
+                }
+            ]
+        },
+        {
             "name": "posttable",
             "base": "",
             "fields": [
@@ -198,6 +230,10 @@
                     "type": "string"
                 },
                 {
+                    "name": "eos_price",
+                    "type": "string"
+                },
+                {
                     "name": "time",
                     "type": "time_point_sec"
                 },
@@ -216,12 +252,48 @@
             ]
         },
         {
+            "name": "queryid",
+            "base": "",
+            "fields": [
+                {
+                    "name": "key",
+                    "type": "name"
+                },
+                {
+                    "name": "qid",
+                    "type": "checksum256"
+                },
+                {
+                    "name": "active",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
             "name": "reward",
             "base": "",
             "fields": [
                 {
                     "name": "account",
                     "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "scommitment",
+            "base": "",
+            "fields": [
+                {
+                    "name": "shortqueryid",
+                    "type": "name"
+                },
+                {
+                    "name": "queryid",
+                    "type": "checksum256"
+                },
+                {
+                    "name": "commitment",
+                    "type": "checksum256"
                 }
             ]
         },
@@ -298,6 +370,11 @@
     ],
     "actions": [
         {
+            "name": "callback",
+            "type": "callback",
+            "ricardian_contract": ""
+        },
+        {
             "name": "comment",
             "type": "comment",
             "ricardian_contract": ""
@@ -356,8 +433,29 @@
             "key_types": []
         },
         {
+            "name": "postquerymap",
+            "type": "postquerymap",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
             "name": "posttable",
             "type": "posttable",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "queryid",
+            "type": "queryid",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "scommitment",
+            "type": "scommitment",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

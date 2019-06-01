@@ -3,11 +3,11 @@
  *  @copyright defined in eos/LICENSE.txt
  */
 
-#include "weiwentokens.hpp"
+#include "weiwentoken2.hpp"
 
 namespace eosio {
 
-void weiwentokens::create( name   issuer,
+void weiwentoken2::create( name   issuer,
                     asset  maximum_supply )
 {
     require_auth( _self );
@@ -29,7 +29,7 @@ void weiwentokens::create( name   issuer,
 }
 
 
-void weiwentokens::issue( name to, asset quantity, string memo )
+void weiwentoken2::issue( name to, asset quantity, string memo )
 {
     auto sym = quantity.symbol;
     check( sym.is_valid(), "invalid symbol name" );
@@ -60,7 +60,7 @@ void weiwentokens::issue( name to, asset quantity, string memo )
     }
 }
 
-void weiwentokens::retire( asset quantity, string memo )
+void weiwentoken2::retire( asset quantity, string memo )
 {
     auto sym = quantity.symbol;
     check( sym.is_valid(), "invalid symbol name" );
@@ -84,7 +84,7 @@ void weiwentokens::retire( asset quantity, string memo )
     sub_balance( st.issuer, quantity );
 }
 
-void weiwentokens::transfer( name    from,
+void weiwentoken2::transfer( name    from,
                       name    to,
                       asset   quantity,
                       string  memo )
@@ -110,7 +110,7 @@ void weiwentokens::transfer( name    from,
     add_balance( to, quantity, payer );
 }
 
-void weiwentokens::sub_balance( name owner, asset value ) {
+void weiwentoken2::sub_balance( name owner, asset value ) {
    accounts from_acnts( _self, owner.value );
 
    const auto& from = from_acnts.get( value.symbol.code().raw(), "no balance object found" );
@@ -121,7 +121,7 @@ void weiwentokens::sub_balance( name owner, asset value ) {
       });
 }
 
-void weiwentokens::add_balance( name owner, asset value, name ram_payer )
+void weiwentoken2::add_balance( name owner, asset value, name ram_payer )
 {
    accounts to_acnts( _self, owner.value );
    auto to = to_acnts.find( value.symbol.code().raw() );
@@ -136,7 +136,7 @@ void weiwentokens::add_balance( name owner, asset value, name ram_payer )
    }
 }
 
-void weiwentokens::open( name owner, const symbol& symbol, name ram_payer )
+void weiwentoken2::open( name owner, const symbol& symbol, name ram_payer )
 {
    require_auth( ram_payer );
 
@@ -155,7 +155,7 @@ void weiwentokens::open( name owner, const symbol& symbol, name ram_payer )
    }
 }
 
-void weiwentokens::close( name owner, const symbol& symbol )
+void weiwentoken2::close( name owner, const symbol& symbol )
 {
    require_auth( owner );
    accounts acnts( _self, owner.value );

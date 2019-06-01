@@ -312,6 +312,20 @@
             ]
         },
         {
+            "name": "updateprice",
+            "base": "",
+            "fields": [
+                {
+                    "name": "queryId",
+                    "type": "checksum256"
+                },
+                {
+                    "name": "price",
+                    "type": "string"
+                }
+            ]
+        },
+        {
             "name": "usertable",
             "base": "",
             "fields": [
@@ -402,6 +416,11 @@
         {
             "name": "unfollow",
             "type": "unfollow",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "updateprice",
+            "type": "updateprice",
             "ricardian_contract": ""
         },
         {

@@ -106,6 +106,7 @@ public:
       post.content = content;
       post.attachtype = attachtype;
       post.attachment = attachment;
+      post.eos_price = std::string("");            
       post.time = time_point_sec(current_time_point()); 
       post.balance = asset(0, TOKEN_SYMBOL);
       post.like_num = 0;
@@ -131,11 +132,13 @@ public:
     std::string price = vector_to_string(result);
     
     map_t maps(_self, _self.value);
-    auto secondary = maps.get_index<name{"byqueryid"}>();
+    auto secondary = maps.get_index<"byqueryid"_n>();
     auto itr = secondary.find(queryId);
 
     post_t posts(_self, _self.value);
-    posts.modify(posts.find(itr->post_id), same_payer, [&](auto& post){
+    auto pitr = posts.find(itr->post_id);
+
+    posts.modify(pitr, _self, [&](auto& post){
       post.eos_price = price;
     });
   }

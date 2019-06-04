@@ -1,7 +1,7 @@
 import IpfsAPI from 'ipfs-api';
 
 const ipfs = IpfsAPI('ipfs.infura.io', '5001', {protocol: 'https'});
-const ipfsPrefix = 'https://gateway.ipfs.io/ipfs/';
+const ipfsPrefix = 'https://ipfs.io/ipfs/';
 
 /**
  * 保存文件到IPFS

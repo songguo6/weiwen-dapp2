@@ -6,6 +6,14 @@ import { Card, List, Avatar, Icon, Modal, Input, Divider } from 'antd';
 import { fetchAll } from '../api/fetch';
 import { like, isLiked, comment } from '../api/service';
 import * as Utils from '../util/Utils';
+import * as ipfsApi from '../api/ipfsApi';
+
+const IconText = ({ type, text, onClick }) => (
+  <span onClick={onClick}>
+    <Icon type={type} style={{ marginRight: 8 }} />
+    {text}
+  </span>
+);
 
 class Posts extends Component {
 
@@ -104,13 +112,22 @@ class Posts extends Component {
     this.setState({commentContent: e.target.value});
   }
 
+  renderAttachment(type, attachment){
+    if(type === 1){
+      return <a href={attachment}><IconText type='link' text={attachment} /></a> 
+    }else if(type === 2){
+      return <a href={ipfsApi.ipfsUrl(attachment)}><IconText type='link' text={attachment} /></a> 
+    }else if(type === 3){
+      return (
+        <a href={ipfsApi.ipfsUrl(attachment)} target='_blank'>
+          <img src={ipfsApi.ipfsUrl(attachment)} alt='' style={{width: 230, height: 100}}/>
+        </a>
+      )
+    }
+    return '';
+  }
+
   render(){
-    const IconText = ({ type, text, onClick }) => (
-      <span onClick={onClick}>
-        <Icon type={type} style={{ marginRight: 8 }} />
-        {text}
-      </span>
-    );
     const { list, modalVisible, confirmLoading, currentPost, commentList } = this.state;
     return (
       <Card bordered={false} style={{ marginBottom: 24 }}>
@@ -162,9 +179,7 @@ class Posts extends Component {
                 {
                   item.attachtype ? 
                   <div className='item-attach'>
-                    <a href={item.attachment}>
-                      <IconText type='link' text={item.attachment} />
-                    </a> 
+                    {this.renderAttachment(item.attachtype, item.attachment)}
                   </div> : ''
                 }
                 <div className='item-extra'>

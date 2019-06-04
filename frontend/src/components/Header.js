@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 
-import { Layout, Button, Modal, Input, Radio } from 'antd';
+import { Layout, Button, Modal, Input, Radio, Upload } from 'antd';
 
 import * as Utils from '../util/Utils';
+import * as ipfsApi from '../api/ipfsApi';
 import { post } from '../api/service';
 
 class Header extends Component {
@@ -12,6 +13,7 @@ class Header extends Component {
     this.showModal = this.showModal.bind(this);
     this.handleOk = this.handleOk.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+    this.handleUpload = this.handleUpload.bind(this);
     this.onRadioChange = this.onRadioChange.bind(this);
     this.onTextareaChange = this.onTextareaChange.bind(this);
     this.onInputChange = this.onInputChange.bind(this);
@@ -85,6 +87,16 @@ class Header extends Component {
     this.setState({modalVisible: false});
   }
 
+  async handleUpload(file){
+    if (!file.type.startsWith('image/')) {
+      Utils.msgError('只能上传图片');
+      return false;
+    }
+    const hash = await ipfsApi.saveFileToIPFS(file);
+    this.setState({attachment: hash});
+    return false;
+  }
+
   signButton(){
     const { logged, user } = this.props;
 
@@ -114,6 +126,27 @@ class Header extends Component {
 
   onTextareaChange(e){
     this.setState({content: e.target.value});
+  }
+
+  renderAttachment(type){
+    if(type === 1 || type === 2){
+      return <Input onChange={this.onInputChange} />
+    }else if(type === 3){
+      return (
+        <Upload
+          beforeUpload={this.handleUpload}
+          showUploadList={false}
+          accept='image/*'
+        >               
+        { 
+          this.state.attachment 
+            ? <img src={ipfsApi.ipfsUrl(this.state.attachment)} alt='' style={{width: 100, height: 100}}/> 
+            : <Button type='primary' shape='round' icon='upload'>上传</Button>
+        }
+        </Upload>
+      )
+    }
+    return '';
   }
 
   render(){
@@ -146,8 +179,7 @@ class Header extends Component {
             <Radio value={5}>其他文件</Radio>
           </Radio.Group>
           {attachtype ? <div className='modal-label'>附件：</div> : ''}
-          {attachtype ?
-          <Input onChange={this.onInputChange} /> : ''}
+          {this.renderAttachment(attachtype)}
         </Modal>
         {this.postButton()}
         <Button

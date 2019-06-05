@@ -94,7 +94,7 @@ class Header extends Component {
     }
     const hash = await ipfsApi.saveFileToIPFS(file);
     this.setState({attachment: hash});
-    ipfsApi.pinByPinata(hash);
+    ipfsApi.pinByInfura(hash);
     return false;
   }
 

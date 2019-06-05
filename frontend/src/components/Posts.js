@@ -119,7 +119,7 @@ class Posts extends Component {
       return <a href={ipfsApi.ipfsUrl(attachment)}><IconText type='link' text={attachment} /></a> 
     }else if(type === 3){
       return (
-        <a href={ipfsApi.ipfsUrl(attachment)} target='_blank'>
+        <a href={ipfsApi.ipfsUrl(attachment)} target='_blank' rel='noopener noreferrer'>
           <img src={ipfsApi.ipfsUrl(attachment)} alt='' style={{width: 230, height: 100}}/>
         </a>
       )

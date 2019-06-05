@@ -1,7 +1,11 @@
 import IpfsAPI from 'ipfs-api';
+import axios from 'axios';
 
 const ipfs = IpfsAPI('ipfs.infura.io', '5001', {protocol: 'https'});
 const ipfsPrefix = 'https://ipfs.io/ipfs/';
+
+const pinataApiKey = '7f6281d069410fd3a2c7';
+const pinataSecretApiKey = '5dd9ef467c830d553d8e47ab91d22d76aa5280f756e614625bcc79d5e5960258';
 
 /**
  * 保存文件到IPFS
@@ -55,3 +59,34 @@ export const readTextFromIPFS = (hash) => {
 export const ipfsUrl = (hash) => {
   return ipfsPrefix + hash;
 };
+
+/**
+ * 使用Infura固定服务
+ */
+export const pinByInfura = (hash) => {
+  axios.get('https://ipfs.infura.io:5001/api/v0/pin/add?arg=/ipfs/' + hash)
+  .then(res => {
+    console.log(res);
+  })
+  .catch(error => {
+    console.log(error);
+  });
+};
+
+/**
+ * 使用Pinata固定服务
+ */
+export const pinByPinata = (hash) => {
+  axios.post('https://api.pinata.cloud/pinning/pinHashToIPFS',
+    { hashToPin: hash },
+    { headers: 
+      {
+        'pinata_api_key': pinataApiKey,
+        'pinata_secret_api_key': pinataSecretApiKey,
+      }
+    }).then(res => {
+      console.log(res);    
+    }).catch(function (error) {
+      console.log(error);
+    });
+}
